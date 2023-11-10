@@ -80,6 +80,8 @@ namespace TP9.Repositorios
                 var command = new SQLiteCommand(query, connection);
                 connection.Open();
 
+                command.Parameters.Add(new SQLiteParameter("@Id", id));
+
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
                     user.Id = Convert.ToInt32(reader["Id"]);
