@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.DataProtection.Repositories;
+using TP9.Clases;
+using TP9.Repositorios;
+
 namespace TP9.Repositorios
 {
-    public class UsuarioRepository : IRepository
+    public class UsuarioRepository : IUsuarioRepository
     {
-        private string cadenaConexion = "Data Source=TP9/Kanban.db;Cache=Shared";
+        private string cadenaConexion = "Data Source=DB/Kanban.db;Cache=Shared";
 
         public List<Usuario> GetAll()
         {
