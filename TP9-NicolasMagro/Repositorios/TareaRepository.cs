@@ -53,6 +53,36 @@ namespace TP9.Repositorios
             }
         }
 
+        public List<Tarea> GetAll()
+        {
+            var queryString = @"SELECT * FROM Tarea;";
+            List<Tarea> tasks = new List<Tarea>();
+            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            {
+                SQLiteCommand command = new SQLiteCommand(queryString, connection);
+                connection.Open();
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var task = new Tarea();
+                        task.Id = Convert.ToInt32(reader["Id"]);
+                        task.Id_tablero = Convert.ToInt32(reader["Id_tablero"]);
+                        task.Nombre = reader["Nombre"].ToString();
+                        task.Estado = (EstadoTarea)Convert.ToInt32(reader["Estado"]);
+                        task.Descripcion = reader["Descripcion"].ToString();
+                        task.Color = reader["Color"].ToString();
+                        task.IdUsuarioAsignado = Convert.ToInt32(reader["Id_usuario_asignado"]);
+
+                        tasks.Add(task);
+                    }
+                }
+                connection.Close();
+            }
+            return tasks;
+        }
+
         public Tarea GetById(int id)
         {
             var query = "SELECT Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_asignado FROM Tarea WHERE Id = @Id";

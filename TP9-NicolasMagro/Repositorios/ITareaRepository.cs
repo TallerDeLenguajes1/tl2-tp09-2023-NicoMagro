@@ -6,6 +6,7 @@ namespace TP9.Repositorios
     {
         public void Create(int idTablero, Tarea task);
         public void Update(int id, Tarea task);
+        public List<Tarea> GetAll();
         public Tarea GetById(int id);
         public List<Tarea> GetByUsuario(int idUsuario);
         public List<Tarea> GetByTablero(int idTablero);
