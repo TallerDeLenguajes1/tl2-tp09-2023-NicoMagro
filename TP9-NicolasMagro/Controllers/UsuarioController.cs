@@ -9,7 +9,7 @@ namespace TP9.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly ILogger<UsuarioController> _logger;
-        private readonly IUsuarioRepository repository;
+        private readonly UsuarioRepository repository;
 
         public UsuarioController(ILogger<UsuarioController> logger)
         {
@@ -18,7 +18,7 @@ namespace TP9.Controllers
         }
 
         [HttpPost]
-        [Route("CreateUser")]
+        [Route("api/usuario/CreateUser")]
         public ActionResult<Usuario> Create(Usuario user)
         {
             repository.Create(user);

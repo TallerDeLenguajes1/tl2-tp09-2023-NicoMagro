@@ -1,5 +1,5 @@
 using TP9.Clases;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 namespace TP9.Repositorios
 {
@@ -9,20 +9,20 @@ namespace TP9.Repositorios
 
         public void Create(int idTablero, Tarea task)
         {
-            var query = $"INSERT INTO Tarea (Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_asignado)  VALUES (@Id, @idTablero, @Nombre, @Estado, @Descripcion, @Color, @IdUsuarioAsignado)";
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            var query = $"INSERT INTO Tarea (Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_asignado)  VALUES (@IdTablero, @Nombre, @Estado, @Descripcion, @Color, @IdUsuarioAsignado)";
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
 
                 connection.Open();
-                var command = new SQLiteCommand(query, connection);
+                var command = new SqliteCommand(query, connection);
 
-                command.Parameters.Add(new SQLiteParameter("@Id", task.Id));
-                command.Parameters.Add(new SQLiteParameter("@IdTablero", idTablero));
-                command.Parameters.Add(new SQLiteParameter("@Nombre", task.Nombre));
-                command.Parameters.Add(new SQLiteParameter("@Estado", task.Estado));
-                command.Parameters.Add(new SQLiteParameter("@Descripcion", task.Descripcion));
-                command.Parameters.Add(new SQLiteParameter("@Color", task.Color));
-                command.Parameters.Add(new SQLiteParameter("@IdUsuarioAsignado", task.IdUsuarioAsignado));
+                //command.Parameters.Add(new SqliteParameter("@Id", task.Id));
+                command.Parameters.Add(new SqliteParameter("@IdTablero", idTablero));
+                command.Parameters.Add(new SqliteParameter("@Nombre", task.Nombre));
+                command.Parameters.Add(new SqliteParameter("@Estado", task.Estado));
+                command.Parameters.Add(new SqliteParameter("@Descripcion", task.Descripcion));
+                command.Parameters.Add(new SqliteParameter("@Color", task.Color));
+                command.Parameters.Add(new SqliteParameter("@IdUsuarioAsignado", task.IdUsuarioAsignado));
 
                 command.ExecuteNonQuery();
 
@@ -32,21 +32,21 @@ namespace TP9.Repositorios
 
         public void Update(int id, Tarea task)
         {
-            var query = "UPDATE Tarea SET Id_tablero = @Id_tablero, Nombre = @NombreTarea, Estado = @Estado,Descripcion = @Descripcion, Color = @Color, Id_usuario_asignado = @IdUsuario WHERE Id = @Id";
+            var query = "UPDATE Tarea SET Id_tablero = @Id_tablero, Nombre = @NombreTarea, Estado = @Estado, Descripcion = @Descripcion, Color = @Color, Id_usuario_asignado = @IdUsuario WHERE Id = @Id";
 
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
+                var command = new SqliteCommand(query, connection);
+
+                command.Parameters.Add(new SqliteParameter("@Id", id));
+                command.Parameters.Add(new SqliteParameter("@Id_tablero", task.Id_tablero));
+                command.Parameters.Add(new SqliteParameter("@NombreTarea", task.Nombre));
+                command.Parameters.Add(new SqliteParameter("@Estado", task.Estado));
+                command.Parameters.Add(new SqliteParameter("@Descripcion", task.Descripcion));
+                command.Parameters.Add(new SqliteParameter("@Color", task.Color));
+                command.Parameters.Add(new SqliteParameter("@IdUsuario", task.IdUsuarioAsignado));
+
                 connection.Open();
-                var command = new SQLiteCommand(query, connection);
-
-                command.Parameters.Add(new SQLiteParameter("@Id", id));
-                command.Parameters.Add(new SQLiteParameter("@Id_tablero", task.Id_tablero));
-                command.Parameters.Add(new SQLiteParameter("@NombreTarea", task.Nombre));
-                command.Parameters.Add(new SQLiteParameter("@Estado", task.Estado));
-                command.Parameters.Add(new SQLiteParameter("@Descripcion", task.Descripcion));
-                command.Parameters.Add(new SQLiteParameter("@Color", task.Color));
-                command.Parameters.Add(new SQLiteParameter("@IdUsuario", task.IdUsuarioAsignado));
-
                 command.ExecuteNonQuery();
 
                 connection.Close();
@@ -57,12 +57,12 @@ namespace TP9.Repositorios
         {
             var queryString = @"SELECT * FROM Tarea;";
             List<Tarea> tasks = new List<Tarea>();
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                SQLiteCommand command = new SQLiteCommand(queryString, connection);
+                SqliteCommand command = new SqliteCommand(queryString, connection);
                 connection.Open();
 
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                using (SqliteDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -85,25 +85,28 @@ namespace TP9.Repositorios
 
         public Tarea GetById(int id)
         {
-            var query = "SELECT Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_asignado FROM Tarea WHERE Id = @Id";
+            var query = "SELECT * FROM Tarea WHERE Id = @Id";
             var task = new Tarea();
 
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                var command = new SQLiteCommand(query, connection);
+                var command = new SqliteCommand(query, connection);
+
+                command.Parameters.Add(new SqliteParameter("@Id", id));
                 connection.Open();
 
-                command.Parameters.Add(new SQLiteParameter("@Id", id));
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                using (SqliteDataReader reader = command.ExecuteReader())
                 {
-                    task.Id = Convert.ToInt32(reader["Id"]);
-                    task.Id_tablero = Convert.ToInt32(reader["Id_tablero"]);
-                    task.Nombre = reader["Nombre"].ToString();
-                    task.Estado = (EstadoTarea)Convert.ToInt32(reader["Estado"]);
-                    task.Descripcion = reader["Descripcion"].ToString();
-                    task.Color = reader["Color"].ToString();
-                    task.IdUsuarioAsignado = Convert.ToInt32(reader["Id_usuario_asignado"]);
+                    while (reader.Read())
+                    {
+                        task.Id = id;
+                        task.Id_tablero = Convert.ToInt32(reader["Id_tablero"]);
+                        task.Nombre = reader["Nombre"].ToString();
+                        task.Estado = (EstadoTarea)Convert.ToInt32(reader["Estado"]);
+                        task.Descripcion = reader["Descripcion"].ToString();
+                        task.Color = reader["Color"].ToString();
+                        task.IdUsuarioAsignado = Convert.ToInt32(reader["Id_usuario_asignado"]);
+                    }
                 }
 
                 connection.Close();
@@ -113,16 +116,16 @@ namespace TP9.Repositorios
 
         public List<Tarea> GetByUsuario(int idUsuario)
         {
-            var queryString = @"SELECT Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_propietario FROM Tarea WHERE Id_usuario_asignado = @idUsuario;";
+            var queryString = @"SELECT Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_asignado FROM Tarea WHERE Id_usuario_asignado = @idUsuario;";
             List<Tarea> Tareas = new List<Tarea>();
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                SQLiteCommand command = new SQLiteCommand(queryString, connection);
+                SqliteCommand command = new SqliteCommand(queryString, connection);
                 connection.Open();
 
-                command.Parameters.Add(new SQLiteParameter("@idUsuario", idUsuario));
+                command.Parameters.Add(new SqliteParameter("@idUsuario", idUsuario));
 
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                using (SqliteDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -145,16 +148,15 @@ namespace TP9.Repositorios
 
         public List<Tarea> GetByTablero(int idTablero)
         {
-            var queryString = @"SELECT Id, Id_tablero, Nombre, Estado, Descripcion, Color, Id_usuario_propietario FROM Tarea WHERE Id_usuario_asignado = @idTablero;";
+            var queryString = @"SELECT * FROM Tarea WHERE Id_tablero = @idTablero;";
             List<Tarea> Tareas = new List<Tarea>();
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
-                SQLiteCommand command = new SQLiteCommand(queryString, connection);
+                SqliteCommand command = new SqliteCommand(queryString, connection);
+                command.Parameters.Add(new SqliteParameter("@idTablero", idTablero));
                 connection.Open();
 
-                command.Parameters.Add(new SQLiteParameter("@idTablero", idTablero));
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
+                using (SqliteDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -179,12 +181,12 @@ namespace TP9.Repositorios
         {
             var query = "DELETE FROM Tarea WHERE Id = @Id";
 
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                var command = new SQLiteCommand(query, connection);
+                var command = new SqliteCommand(query, connection);
 
-                command.Parameters.Add(new SQLiteParameter("@Id", id));
+                command.Parameters.Add(new SqliteParameter("@Id", id));
                 command.ExecuteNonQuery();
 
                 connection.Close();
@@ -194,13 +196,13 @@ namespace TP9.Repositorios
         public void AssignUserTask(int idUsuario, int idTarea)
         {
             var query = "UPDATE Tarea SET Id_usuario_asignado = @idUsuario WHERE Id = idTarea";
-            using (SQLiteConnection connection = new SQLiteConnection(cadenaConexion))
+            using (SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                var command = new SQLiteCommand(query, connection);
+                var command = new SqliteCommand(query, connection);
 
-                command.Parameters.Add(new SQLiteParameter("@idUsuario", idUsuario));
-                command.Parameters.Add(new SQLiteParameter("@idTarea", idTarea));
+                command.Parameters.Add(new SqliteParameter("@idUsuario", idUsuario));
+                command.Parameters.Add(new SqliteParameter("@idTarea", idTarea));
 
                 command.ExecuteNonQuery();
 

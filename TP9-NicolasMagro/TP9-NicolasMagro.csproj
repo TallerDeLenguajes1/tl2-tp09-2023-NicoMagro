@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
+    <nullable>disable</nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TP9_NicolasMagro</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
+    <PackageReference Include="Microsoft.Data.SQLite" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
   </ItemGroup>
 
 </Project>
